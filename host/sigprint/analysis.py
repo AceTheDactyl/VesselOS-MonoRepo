@@ -5,7 +5,7 @@ import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
 
@@ -46,8 +46,8 @@ class AIAnalyzer:
         'connected', 'insight', 'understand', 'release', 'light',
     }
     _neg = {
-        'anxious', 'anxiety', 'worry', 'fear', 'angry', 'sad', 'depressed', 'tired', 'pain', 'stress', 'tense', 'confused',
-        'stuck', 'rumination', 'noise', 'overwhelmed', 'doubt',
+        'anxious', 'anxiety', 'worry', 'fear', 'angry', 'sad', 'depressed', 'tired', 'pain', 'stress',
+        'tense', 'confused', 'stuck', 'rumination', 'noise', 'overwhelmed', 'doubt',
     }
 
     def load_ledger(self, path: str | Path) -> List[JournalEntry]:

@@ -77,8 +77,8 @@ class LiveAnalyzer:
 
             cur.execute(
                 (
-                    "INSERT INTO journal_entries(" \
-                    "session_id, entry_num, session_time, timestamp, text, code, transition, " \
+                    "INSERT INTO journal_entries("
+                    "session_id, entry_num, session_time, timestamp, text, code, transition, "
                     "coherence, plv, entropy, hash, prev_hash) "
                     "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
                 ),
@@ -87,8 +87,8 @@ class LiveAnalyzer:
             # Also mirror into sigprints at the same session time
             cur.execute(
                 (
-                    "INSERT INTO sigprints(" \
-                    "session_id, t_start, t_end, code, coherence, plv, entropy, transition, " \
+                    "INSERT INTO sigprints("
+                    "session_id, t_start, t_end, code, coherence, plv, entropy, transition, "
                     "stage, intensity, pulse_hz, stylus_meta, source) "
                     "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"
                 ),
@@ -126,8 +126,8 @@ class LiveAnalyzer:
             pulse_hz = styl.get("pulse_hz")
             cur.execute(
                 (
-                    "INSERT INTO sigprints(" \
-                    "session_id, t_start, t_end, code, coherence, plv, entropy, transition, " \
+                    "INSERT INTO sigprints("
+                    "session_id, t_start, t_end, code, coherence, plv, entropy, transition, "
                     "stage, intensity, pulse_hz, stylus_meta, source) "
                     "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"
                 ),
