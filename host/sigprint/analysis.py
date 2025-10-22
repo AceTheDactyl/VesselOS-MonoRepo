@@ -5,7 +5,7 @@ import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List
 
 import numpy as np
 
@@ -36,15 +36,18 @@ class AIAnalyzer:
 
     _token_re = re.compile(r"[A-Za-z']+")
     _stop = {
-        'the','and','a','an','to','of','in','on','for','with','is','it','this','that','was','as','at','be','by','from',
-        'are','or','but','not','so','if','then','when','while','my','i','me','we','our','you','your','they','their','he','she','him','her',
-        'there','here','into','out','up','down','over','under','about','just','like','really','very','have','has','had','do','did','done',
+        'the', 'and', 'a', 'an', 'to', 'of', 'in', 'on', 'for', 'with', 'is', 'it', 'this', 'that', 'was', 'as', 'at',
+        'be', 'by', 'from', 'are', 'or', 'but', 'not', 'so', 'if', 'then', 'when', 'while', 'my', 'i', 'me', 'we',
+        'our', 'you', 'your', 'they', 'their', 'he', 'she', 'him', 'her', 'there', 'here', 'into', 'out', 'up', 'down',
+        'over', 'under', 'about', 'just', 'like', 'really', 'very', 'have', 'has', 'had', 'do', 'did', 'done',
     }
     _pos = {
-        'calm','clear','relaxed','open','grateful','loving','joy','ease','peace','flow','present','focused','connected','insight','understand','release','light',
+        'calm', 'clear', 'relaxed', 'open', 'grateful', 'loving', 'joy', 'ease', 'peace', 'flow', 'present', 'focused',
+        'connected', 'insight', 'understand', 'release', 'light',
     }
     _neg = {
-        'anxious','anxiety','worry','fear','angry','sad','depressed','tired','pain','stress','tense','confused','stuck','rumination','noise','overwhelmed','doubt',
+        'anxious', 'anxiety', 'worry', 'fear', 'angry', 'sad', 'depressed', 'tired', 'pain', 'stress', 'tense', 'confused',
+        'stuck', 'rumination', 'noise', 'overwhelmed', 'doubt',
     }
 
     def load_ledger(self, path: str | Path) -> List[JournalEntry]:
@@ -134,6 +137,7 @@ class AIAnalyzer:
         # Sentiment correlations (Pearson with simple scores)
         pos = [p for p, n in sentiments]
         neg = [n for p, n in sentiments]
+
         def corr(a: List[float], b: List[float]) -> float:
             if len(a) < 2:
                 return 0.0
@@ -202,10 +206,13 @@ class AIAnalyzer:
         if loops > 3 and coh < 30:
             sug.append("Add short perturbations (e.g., brief breath holds) to escape low-coherence loops.")
         if analysis.get("sentiment", {}).get("corr_pos_coh", 0.0) > 0.2:
-            sug.append("Positive affect correlates with coherence; reinforce practices that increase positive terms.")
+            sug.append(
+                "Positive affect correlates with coherence; reinforce practices that increase positive terms."
+            )
         if analysis.get("sentiment", {}).get("corr_neg_coh", 0.0) < -0.2:
-            sug.append("Negative affect inversely correlates with coherence; schedule downshifts before challenging tasks.")
+            sug.append(
+                "Negative affect inversely correlates with coherence; schedule downshifts before challenging tasks."
+            )
         if not sug:
             sug.append("Maintain current protocol; collect more data for pattern discovery.")
         return sug
-

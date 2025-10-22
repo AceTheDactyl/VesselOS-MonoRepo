@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 from typing import Optional
 
 from .db import ConsciousnessDB
-from .analysis import AIAnalyzer, JournalEntry
+from .analysis import AIAnalyzer
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -63,13 +62,17 @@ def main(argv: Optional[list[str]] = None) -> int:
     if args.cmd == "analyze":
         db = ConsciousnessDB(args.db)
         # Pull journal entries for the session
-        import sqlite3
 
         cur = db._conn.cursor()
         cur.execute(
-            "SELECT timestamp, session_time, entry_num, sigprints.code, text, journal_entries.transition, journal_entries.coherence, journal_entries.plv, journal_entries.entropy "
-            "FROM journal_entries LEFT JOIN sigprints ON journal_entries.code = sigprints.code AND journal_entries.session_id = sigprints.session_id "
-            "WHERE journal_entries.session_id=? ORDER BY entry_num ASC",
+            (
+                "SELECT timestamp, session_time, entry_num, sigprints.code, text, "
+                "journal_entries.transition, journal_entries.coherence, "
+                "journal_entries.plv, journal_entries.entropy "
+                "FROM journal_entries LEFT JOIN sigprints ON journal_entries.code = sigprints.code "
+                "AND journal_entries.session_id = sigprints.session_id "
+                "WHERE journal_entries.session_id=? ORDER BY entry_num ASC"
+            ),
             (args.session,),
         )
         rows = cur.fetchall()
@@ -110,4 +113,3 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

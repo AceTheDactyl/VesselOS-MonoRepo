@@ -6,7 +6,7 @@ import hmac
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional
 
 
 HEX0 = "0" * 64

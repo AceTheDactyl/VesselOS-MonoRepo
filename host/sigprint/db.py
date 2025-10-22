@@ -3,9 +3,8 @@ from __future__ import annotations
 import json
 import sqlite3
 import time
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 
 DDL = [
@@ -138,21 +137,39 @@ class ConsciousnessDB:
                 ph = obj.get("prev_hash")
 
                 cur.execute(
-                    """
-                    INSERT INTO journal_entries(session_id, entry_num, session_time, timestamp, text, code, transition, coherence, plv, entropy, hash, prev_hash)
-                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
-                    """,
+                    (
+                        "INSERT INTO journal_entries(" \
+                        "session_id, entry_num, session_time, timestamp, text, code, transition, " \
+                        "coherence, plv, entropy, hash, prev_hash) "
+                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
+                    ),
                     (session_id, entry_num, t_sess, ts, text, code, trans, coh, plv, ent, h, ph),
                 )
                 jrn_n += 1
 
                 # Also insert a sigprint row (align as instantaneous at session_time)
                 cur.execute(
-                    """
-                    INSERT INTO sigprints(session_id, t_start, t_end, code, coherence, plv, entropy, transition, stage, intensity, pulse_hz, stylus_meta, source)
-                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
-                    """,
-                    (session_id, t_sess, t_sess, code, coh, plv, ent, trans, None, None, None, json.dumps(obj.get("stylus")), "voice"),
+                    (
+                        "INSERT INTO sigprints(" \
+                        "session_id, t_start, t_end, code, coherence, plv, entropy, transition, " \
+                        "stage, intensity, pulse_hz, stylus_meta, source) "
+                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                    ),
+                    (
+                        session_id,
+                        t_sess,
+                        t_sess,
+                        code,
+                        coh,
+                        plv,
+                        ent,
+                        trans,
+                        None,
+                        None,
+                        None,
+                        json.dumps(obj.get("stylus")),
+                        "voice",
+                    ),
                 )
                 sig_n += 1
                 continue
@@ -172,11 +189,27 @@ class ConsciousnessDB:
                 intensity = styl.get("intensity")
                 pulse_hz = styl.get("pulse_hz")
                 cur.execute(
-                    """
-                    INSERT INTO sigprints(session_id, t_start, t_end, code, coherence, plv, entropy, transition, stage, intensity, pulse_hz, stylus_meta, source)
-                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
-                    """,
-                    (session_id, t_start, t_end, code, coh, plv, ent, trans, stage, intensity, pulse_hz, json.dumps(styl), "controller"),
+                    (
+                        "INSERT INTO sigprints(" \
+                        "session_id, t_start, t_end, code, coherence, plv, entropy, transition, " \
+                        "stage, intensity, pulse_hz, stylus_meta, source) "
+                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                    ),
+                    (
+                        session_id,
+                        t_start,
+                        t_end,
+                        code,
+                        coh,
+                        plv,
+                        ent,
+                        trans,
+                        stage,
+                        intensity,
+                        pulse_hz,
+                        json.dumps(styl),
+                        "controller",
+                    ),
                 )
                 sig_n += 1
         self._conn.commit()
@@ -218,4 +251,3 @@ class ConsciousnessDB:
         )
         self._conn.commit()
         return int(cur.lastrowid)
-

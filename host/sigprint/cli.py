@@ -78,7 +78,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.window is None:
         code, omega, feats = enc.encode(data, ch_names=ch_names, timestamp=time.time())
         if args.json:
-            out = {"code": code, "timestamp": omega.timestamp, "features": feats, "psi": omega.psi, "lambda": omega.lambda_, "coherence": omega.coherence, "plv": omega.plv, "entropy": omega.entropy}
+            out = {
+                "code": code,
+                "timestamp": omega.timestamp,
+                "features": feats,
+                "psi": omega.psi,
+                "lambda": omega.lambda_,
+                "coherence": omega.coherence,
+                "plv": omega.plv,
+                "entropy": omega.entropy,
+            }
             print(json.dumps(out))
         else:
             print(code)
@@ -88,7 +97,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     for (a, b) in idx:
         code, omega, feats = enc.encode(data[:, a:b], ch_names=ch_names, timestamp=time.time())
         if args.json:
-            out = {"code": code, "start": float(a/args.fs), "end": float(b/args.fs), "timestamp": omega.timestamp, "features": feats}
+            out = {
+                "code": code,
+                "start": float(a / args.fs),
+                "end": float(b / args.fs),
+                "timestamp": omega.timestamp,
+                "features": feats,
+            }
             print(json.dumps(out))
         else:
             print(f"{a/args.fs:.3f}-{b/args.fs:.3f}s\t{code}")
@@ -97,4 +112,3 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

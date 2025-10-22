@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 from typing import Optional
 
 from .analysis import AIAnalyzer
@@ -26,8 +25,16 @@ def main(argv: Optional[list[str]] = None) -> int:
     # Pretty text summary
     print(f"Entries: {res.get('count',0)}  Gates: {res.get('gates',0)}  Loops: {res.get('loops',0)}")
     m = res.get('metrics', {})
-    print(f"Coherence mean/p50/p90: {m.get('coherence',{}).get('mean',0):.1f} / {m.get('coherence',{}).get('p50',0):.1f} / {m.get('coherence',{}).get('p90',0):.1f}")
-    print(f"PLV mean/p50/p90:       {m.get('plv',{}).get('mean',0):.2f} / {m.get('plv',{}).get('p50',0):.2f} / {m.get('plv',{}).get('p90',0):.2f}")
+    coh = m.get('coherence', {})
+    plv = m.get('plv', {})
+    print(
+        f"Coherence mean/p50/p90: {coh.get('mean', 0):.1f} / "
+        f"{coh.get('p50', 0):.1f} / {coh.get('p90', 0):.1f}"
+    )
+    print(
+        f"PLV mean/p50/p90:       {plv.get('mean', 0):.2f} / "
+        f"{plv.get('p50', 0):.2f} / {plv.get('p90', 0):.2f}"
+    )
     s = res.get('sentiment', {})
     print(f"Sentiment pos/neg mean:  {s.get('pos_mean',0):.2f} / {s.get('neg_mean',0):.2f}")
     print(f"corr(pos,coh)={s.get('corr_pos_coh',0):.2f}  corr(neg,coh)={s.get('corr_neg_coh',0):.2f}")
@@ -47,4 +54,3 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

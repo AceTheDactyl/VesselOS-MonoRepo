@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import time
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
@@ -94,7 +93,7 @@ def run_closed_loop(
     f_json = open(jsonl_path, "a") if jsonl_path else None
     try:
         while t0 + epoch <= n:
-            seg = data[:, t0 : t0 + epoch]
+            seg = data[:, t0:t0 + epoch]
             eeg_epoch = {name: seg[i] for i, name in enumerate(ch_names)}
             code, omega = encoder.process_epoch(eeg_epoch)
             cmd = pol.decide(code, omega)
@@ -112,7 +111,12 @@ def run_closed_loop(
                 "stylus_cmd": cmd,
             }
             if verbose:
-                print(f"{event['t_start']:.3f}-{event['t_end']:.3f}s\t{code}\t{event['omega']['transition']}\tcoh={omega.coherence:.1f}\tplv={omega.plv:.2f}")
+                msg = (
+                    f"{event['t_start']:.3f}-{event['t_end']:.3f}s\t{code}\t"
+                    f"{event['omega']['transition']}\t"
+                    f"coh={omega.coherence:.1f}\tplv={omega.plv:.2f}"
+                )
+                print(msg)
 
             if stylus is not None and cmd is not None:
                 stylus.send_command(cmd)
@@ -124,4 +128,3 @@ def run_closed_loop(
     finally:
         if f_json is not None:
             f_json.close()
-

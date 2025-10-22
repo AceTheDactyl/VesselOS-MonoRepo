@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import time
-from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -141,10 +140,10 @@ class StructuredSigprintEncoder:
 
             if self._use_scipy:
                 # Zero-phase low-pass; use last sample as DC estimate
-                I = _sp_signal.filtfilt(self._lp_b, self._lp_a, I_raw)
-                Q = _sp_signal.filtfilt(self._lp_b, self._lp_a, Q_raw)
-                I_dc = float(I[-1])
-                Q_dc = float(Q[-1])
+                i_filt = _sp_signal.filtfilt(self._lp_b, self._lp_a, I_raw)
+                q_filt = _sp_signal.filtfilt(self._lp_b, self._lp_a, Q_raw)
+                I_dc = float(i_filt[-1])
+                Q_dc = float(q_filt[-1])
             else:
                 # Moving-average low-pass
                 k = self._lp_kernel
@@ -365,7 +364,7 @@ class VoiceJournal:
                 print("\n\nSession interrupted by user.")
                 break
 
-        print(f"\n=== Session Complete ===")
+        print("\n=== Session Complete ===")
         print(f"Duration: {time.time() - session_start:.1f} seconds")
         print(f"Entries: {entry_count}")
         print(f"Gates detected: {self.encoder.gate_count}")

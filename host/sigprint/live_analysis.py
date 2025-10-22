@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 from .analysis import AIAnalyzer
 from .db import ConsciousnessDB
@@ -77,19 +76,37 @@ class LiveAnalyzer:
             ph = obj.get("prev_hash")
 
             cur.execute(
-                """
-                INSERT INTO journal_entries(session_id, entry_num, session_time, timestamp, text, code, transition, coherence, plv, entropy, hash, prev_hash)
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
-                """,
+                (
+                    "INSERT INTO journal_entries(" \
+                    "session_id, entry_num, session_time, timestamp, text, code, transition, " \
+                    "coherence, plv, entropy, hash, prev_hash) "
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"
+                ),
                 (self.session_id, entry_num, t_sess, ts, text, code, trans, coh, plv, ent, h, ph),
             )
             # Also mirror into sigprints at the same session time
             cur.execute(
-                """
-                INSERT INTO sigprints(session_id, t_start, t_end, code, coherence, plv, entropy, transition, stage, intensity, pulse_hz, stylus_meta, source)
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """,
-                (self.session_id, t_sess, t_sess, code, coh, plv, ent, trans, None, None, None, json.dumps(obj.get("stylus")), "voice"),
+                (
+                    "INSERT INTO sigprints(" \
+                    "session_id, t_start, t_end, code, coherence, plv, entropy, transition, " \
+                    "stage, intensity, pulse_hz, stylus_meta, source) "
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                ),
+                (
+                    self.session_id,
+                    t_sess,
+                    t_sess,
+                    code,
+                    coh,
+                    plv,
+                    ent,
+                    trans,
+                    None,
+                    None,
+                    None,
+                    json.dumps(obj.get("stylus")),
+                    "voice",
+                ),
             )
             self.db._conn.commit()
             return
@@ -108,11 +125,27 @@ class LiveAnalyzer:
             intensity = styl.get("intensity")
             pulse_hz = styl.get("pulse_hz")
             cur.execute(
-                """
-                INSERT INTO sigprints(session_id, t_start, t_end, code, coherence, plv, entropy, transition, stage, intensity, pulse_hz, stylus_meta, source)
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """,
-                (self.session_id, t_start, t_end, code, coh, plv, ent, trans, stage, intensity, pulse_hz, json.dumps(styl), "controller"),
+                (
+                    "INSERT INTO sigprints(" \
+                    "session_id, t_start, t_end, code, coherence, plv, entropy, transition, " \
+                    "stage, intensity, pulse_hz, stylus_meta, source) "
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                ),
+                (
+                    self.session_id,
+                    t_start,
+                    t_end,
+                    code,
+                    coh,
+                    plv,
+                    ent,
+                    trans,
+                    stage,
+                    intensity,
+                    pulse_hz,
+                    json.dumps(styl),
+                    "controller",
+                ),
             )
             self.db._conn.commit()
 
@@ -192,4 +225,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

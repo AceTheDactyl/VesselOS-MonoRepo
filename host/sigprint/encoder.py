@@ -83,8 +83,8 @@ class SigprintEncoder:
         sin_ref = np.sin(omega * t)
 
         # Mix to baseband
-        I = x * cos_ref  # [C,T]
-        Q = x * sin_ref
+        i_mix = x * cos_ref  # [C,T]
+        q_mix = x * sin_ref
 
         # Low-pass via moving average
         M = max(1, int(round(self.lpf_seconds * self.fs)))
@@ -94,12 +94,12 @@ class SigprintEncoder:
 
         # Convolve along time per channel
         # 'same' to maintain shape; group delay exists but irrelevant for window stats
-        I_lp = np.apply_along_axis(lambda v: np.convolve(v, kernel, mode="same"), 1, I)
-        Q_lp = np.apply_along_axis(lambda v: np.convolve(v, kernel, mode="same"), 1, Q)
+        i_lp = np.apply_along_axis(lambda v: np.convolve(v, kernel, mode="same"), 1, i_mix)
+        q_lp = np.apply_along_axis(lambda v: np.convolve(v, kernel, mode="same"), 1, q_mix)
 
         # Envelope and phase
-        A = np.hypot(I_lp, Q_lp)
-        phi = np.arctan2(Q_lp, I_lp)
+        A = np.hypot(i_lp, q_lp)
+        phi = np.arctan2(q_lp, i_lp)
         return A, phi
 
     @staticmethod
@@ -275,4 +275,3 @@ class SigprintEncoder:
         )
 
         return code, omega, features
-

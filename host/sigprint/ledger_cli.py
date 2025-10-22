@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import argparse
-import base64
-import getpass
+import sys
 import json
 from pathlib import Path
 from typing import Optional
@@ -57,10 +56,9 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     if args.cmd == "append":
         try:
-            entry = json.load(sys.stdin)  # type: ignore[name-defined]
+            entry = json.load(sys.stdin)
         except Exception:
-            import sys as _sys
-            print("error: stdin must be a JSON object", file=_sys.stderr)
+            print("error: stdin must be a JSON object", file=sys.stderr)
             return 2
         secret = _load_secret(args.secret)
         out = append_signed(args.ledger, entry, secret=secret)
@@ -77,4 +75,3 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

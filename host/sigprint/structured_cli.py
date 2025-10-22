@@ -51,7 +51,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     n = data.shape[1]
     t0 = 0
     while t0 + epoch <= n:
-        seg = data[:, t0 : t0 + epoch]
+        seg = data[:, t0:t0 + epoch]
         eeg_epoch = {name: seg[i] for i, name in enumerate(ch_names)}
         code, omega = enc.process_epoch(eeg_epoch)
         if args.json:
