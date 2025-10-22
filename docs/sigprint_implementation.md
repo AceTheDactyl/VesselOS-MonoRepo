@@ -68,3 +68,93 @@ python3 -m host.sigprint.db_cli analyze --db db.sqlite --session 1 --json
 - Use `--amp-gain` to calibrate coherence scale based on signal units (e.g., volts → µV).
 - Not for medical diagnosis; research and exploratory feedback only.
 
+## Complete Encoder (Reference)
+
+The structured encoder implemented in `host.sigprint.system.StructuredSigprintEncoder` follows this reference design, mirroring the lock‑in (radio) demodulation to extract ψ (amplitude) and Λ (phase), and a 20‑digit code layout (phase topology, amplitude distribution, coherence/PLV, context, checksum):
+
+```python
+import numpy as np
+import hashlib
+from scipy import signal
+from dataclasses import dataclass
+from typing import Dict, List, Tuple
+
+@dataclass
+class OmegaState:
+    psi: Dict[str, float]      # ψ per channel
+    lambda_: Dict[str, float]  # Λ per channel (deg)
+    coherence: float           # ∫ψ² proxy → 0..100
+    plv: float                 # phase locking 0..1
+    entropy: float             # 0..1
+    timestamp: float
+
+class SigprintEncoder:
+    def __init__(self, channel_names: List[str], sample_rate: float = 250.0, lockin_freq: float = 8.0, gate_threshold: int = 8):
+        self.channel_names = channel_names
+        self.sample_rate = sample_rate
+        self.lockin_freq = lockin_freq
+        self.gate_threshold = gate_threshold
+        self.epoch_length = int(sample_rate)
+        t = np.arange(self.epoch_length) / sample_rate
+        self.ref_sin = np.sin(2 * np.pi * lockin_freq * t)
+        self.ref_cos = np.cos(2 * np.pi * lockin_freq * t)
+        nyq = sample_rate / 2
+        cutoff = 2.0 / nyq
+        self.lp_b, self.lp_a = signal.butter(4, cutoff, btype='low')
+        self.prev_signature = None
+        self.gate_count = 0
+        self.loop_count = 0
+
+    def process_epoch(self, eeg_epoch: Dict[str, np.ndarray], stylus_context: Dict = None) -> Tuple[str, OmegaState]:
+        omega = self._compute_omega_state(eeg_epoch)
+        parts = [
+            self._encode_phase_topology(omega),     # 4 digits
+            self._encode_amplitude_distribution(omega),  # 4 digits
+            self._encode_coherence(omega),         # 4 digits
+            self._encode_reserved(omega, stylus_context) # 6 digits
+        ]
+        payload = ''.join(parts)
+        checksum = self._compute_checksum(payload)
+        sig = payload + checksum
+        if self.prev_signature:
+            transition = self._detect_transition(sig)
+            setattr(omega, 'transition', transition)
+        self.prev_signature = sig
+        return sig, omega
+
+    def _compute_omega_state(self, eeg_epoch: Dict[str, np.ndarray]) -> OmegaState:
+        psi, lambda_ = {}, {}
+        for ch in self.channel_names:
+            sig = eeg_epoch.get(ch, np.zeros(self.epoch_length))
+            if len(sig) != self.epoch_length:
+                sig = sig[:self.epoch_length] if len(sig) > self.epoch_length else np.pad(sig, (0, self.epoch_length - len(sig)))
+            I = signal.filtfilt(self.lp_b, self.lp_a, sig * self.ref_cos)[-1]
+            Q = signal.filtfilt(self.lp_b, self.lp_a, sig * self.ref_sin)[-1]
+            amplitude = float(np.hypot(I, Q))
+            phase_deg = float(np.degrees(np.arctan2(Q, I)))
+            psi[ch] = amplitude
+            lambda_[ch] = phase_deg
+        coherence = self._compute_global_coherence(psi)
+        plv = self._compute_phase_locking_value(lambda_)
+        entropy = self._compute_entropy(psi)
+        return OmegaState(psi=psi, lambda_=lambda_, coherence=coherence, plv=plv, entropy=entropy, timestamp=float(__import__('time').time()))
+
+    # ... encode_* helpers: phase topology, amplitude distribution, coherence/PLV, reserved, checksum ...
+```
+
+The production implementation lives in `host.sigprint.system.StructuredSigprintEncoder` (with optional SciPy fallback, per‑channel normalization, and robust metrics). Use the CLIs above for reproducible runs.
+
+## Voice Journal and Stylus Hooks (Reference)
+
+```python
+class VoiceJournal:
+    # Synchronizes speech→text with SIGPRINT; appends to immutable JSONL ledger.
+    # See host.sigprint.system.VoiceJournal for the working implementation.
+    ...
+
+class StylusInterface:
+    # Serial JSON I/O with RHZ Stylus; provides context and accepts control commands.
+    # See host.sigprint.system.StylusInterface for the working implementation.
+    ...
+```
+
