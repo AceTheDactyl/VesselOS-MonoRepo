@@ -12,7 +12,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  build-and-test:
+  build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -195,3 +195,27 @@ jobs:
       - name: Workspace npm pack dry-run
         run: |
           npm run ws:pack
+
+  verify-structure:
+    name: verify-structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify repo structure and key files
+        run: |
+          set -euo pipefail
+          echo "Checking key directories and files exist..."
+          test -d host/sigprint
+          test -f host/sigprint/system.py
+          test -f host/sigprint/encoder.py
+          test -f host/sigprint/controller.py
+          test -f host/sigprint/ledger.py
+          test -f host/sigprint/analysis.py
+          test -f host/sigprint/db.py
+          test -f docs/sigprint.md
+          test -f docs/sigprint_theory.md
+          test -f docs/sigprint_implementation.md
+          test -f docs/sigprint_significance.md
+          test -f docs/immutable_ledger.md
+          test -f docs/consciousness_database.md
+          echo "Structure OK"

@@ -17,6 +17,14 @@ nav:
   - Host Tools:
       - Serial Logger: host_logger_serial.md
       - PSD Quicklook: host_psd_quicklook.md
+      - SIGPRINT: sigprint.md
+      - SIGPRINT Theory: sigprint_theory.md
+      - SIGPRINT Implementation: sigprint_implementation.md
+      - SIGPRINT Significance: sigprint_significance.md
+  - Integrity:
+      - Immutable Ledger: immutable_ledger.md
+  - Analysis:
+      - Consciousness Database: consciousness_database.md
   - CI & Releases:
       - CI Pipeline: ci.md
       - Release Notes (GitHub): https://github.com/AceTheDactyl/PlatformIO/releases
