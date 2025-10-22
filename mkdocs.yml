@@ -18,6 +18,7 @@ nav:
       - Serial Logger: host_logger_serial.md
       - PSD Quicklook: host_psd_quicklook.md
       - SIGPRINT: sigprint.md
+      - SIGPRINT Theory: sigprint_theory.md
   - CI & Releases:
       - CI Pipeline: ci.md
       - Release Notes (GitHub): https://github.com/AceTheDactyl/PlatformIO/releases
