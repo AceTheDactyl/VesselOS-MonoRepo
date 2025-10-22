@@ -88,6 +88,22 @@ Current implementation is Order 2–3:
 
 ---
 
+### Ontology → Manifestation Ladder
+
+```
+Unity (ontological ground)
+  ↓
+Ω‑field (time/frequency manifestation)
+  ↓
+Neural field → EEG (sensor domain)
+  ↓
+Lock‑in (ψ, Λ extraction) → Ω‑metrics
+  ↓
+20‑digit SIGPRINT (per second)
+  ↓
+Dynamics (loops/gates) → Learning → Protocols
+```
+
 ### Operational Bridge to Implementation
 - Lock‑in (radio analog): multiply EEG by `cos(2π·f0·t)` and `sin(2π·f0·t)`, low‑pass → `A ≈ ψ`, `φ ≈ Λ` per channel.
 - Ω‑metrics: spatial ∫ψ² (coherence), PLV/Kuramoto (phase order), phase entropy, envelope correlations.
