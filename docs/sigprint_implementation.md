@@ -48,6 +48,12 @@ python3 -m host.sigprint.ai_cli journal_ledger.jsonl --json
 ```
 - Topics around gates vs loops, correlations (sentiment ↔ coherence/PLV), suggestions.
 
+### Live Voice Journal ↔ AI Analysis
+```
+python3 -m host.sigprint.live_analysis --db db.sqlite --subject alice --ledger journal_ledger.jsonl --label "live-journal" --window 20
+```
+- Tails the ledger, inserts entries into SQLite, runs rolling analysis, and prints suggestions; persists insights.
+
 ### Consciousness Database (SQLite)
 ```
 python3 -m host.sigprint.db_cli init --db db.sqlite --subject alice
@@ -157,4 +163,3 @@ class StylusInterface:
     # See host.sigprint.system.StylusInterface for the working implementation.
     ...
 ```
-
