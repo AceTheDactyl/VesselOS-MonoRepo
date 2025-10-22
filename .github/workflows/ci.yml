@@ -197,6 +197,7 @@ jobs:
           npm run ws:pack
 
   verify-structure:
+    if: github.event_name == 'pull_request'
     name: verify-structure
     runs-on: ubuntu-latest
     steps:
